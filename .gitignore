@@ -1,0 +1,13 @@
+# C++ build artifacts
+chaos-emulator
+*.o
+*.out
+
+# CMake build directory
+build/
+
+# Logs
+logs/*.log
+
+# Temporary files
+*.tmp
