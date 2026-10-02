@@ -1,8 +1,10 @@
 #include "NetemController.hpp"
 
+#include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 bool NetemController::apply(
     const NetworkConfig& config
@@ -13,6 +15,7 @@ bool NetemController::apply(
             << config.interfaceName
             << " root netem";
 
+    // Add latency and jitter
     if (!config.latency.empty()) {
 
         command << " delay "
@@ -22,44 +25,22 @@ bool NetemController::apply(
             command << " "
                     << config.jitter;
         }
-    if (config.clear) {
-        return NetemController::clear(
-            config.interfaceName
-        ) ? 0 : 1;
     }
 
-    if (config.status) {
-        return NetemController::show(
-            config.interfaceName
-        ) ? 0 : 1;
-    }
-
-    if (!config.latency.empty() ||
-        !config.loss.empty()) {
-
-        return NetemController::apply(
-            config
-        ) ? 0 : 1;
-    }
-
-    std::cout << "\n[CONFIGURATION]\n";
-    std::cout << "Interface : "
-              << config.interfaceName << "\n";
-
-    return 0;
-    }
-
+    // Add packet loss
     if (!config.loss.empty()) {
 
         command << " loss "
                 << config.loss;
     }
 
-    std::cout << "[INFO] Applying network configuration...\n";
+    std::cout
+        << "[INFO] Applying network configuration...\n";
 
-    std::cout << "[COMMAND] "
-              << command.str()
-              << "\n";
+    std::cout
+        << "[COMMAND] "
+        << command.str()
+        << "\n";
 
     int result = std::system(
         command.str().c_str()
@@ -83,6 +64,45 @@ bool NetemController::apply(
 bool NetemController::clear(
     const std::string& interfaceName
 ) {
+    // First check whether netem is actually active.
+    std::string checkCommand =
+        "tc qdisc show dev " +
+        interfaceName;
+
+    FILE* pipe = popen(
+        checkCommand.c_str(),
+        "r"
+    );
+
+    if (pipe == nullptr) {
+
+        std::cerr
+            << "[ERROR] Unable to inspect interface.\n";
+
+        return false;
+    }
+
+    char buffer[256];
+    std::string output;
+
+    while (fgets(buffer, sizeof(buffer), pipe)) {
+        output += buffer;
+    }
+
+    pclose(pipe);
+
+    // Already clear
+    if (output.find("netem") == std::string::npos) {
+
+        std::cout
+            << "[INFO] No netem configuration found.\n";
+
+        std::cout
+            << "[SUCCESS] Interface is already clear.\n";
+
+        return true;
+    }
+
     std::string command =
         "sudo tc qdisc del dev " +
         interfaceName +

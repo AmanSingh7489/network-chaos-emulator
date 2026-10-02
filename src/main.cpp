@@ -4,6 +4,7 @@
 #include "Config.hpp"
 #include "Validator.hpp"
 #include "NetemController.hpp"
+#include "NetworkMonitor.hpp"
 
 void printHelp() {
 
@@ -12,32 +13,119 @@ void printHelp() {
     std::cout << " Network Latency & Packet-Loss Chaos Emulator\n";
     std::cout << "===============================================\n\n";
 
-    std::cout << "Usage:\n";
-    std::cout << "  ./chaos-emulator [options]\n\n";
+    std::cout << "Automatic mode:\n";
+    std::cout << "  ./chaos-emulator\n\n";
 
-    std::cout << "Options:\n";
-    std::cout << "  --help                 Show this help message\n";
-    std::cout << "  --interface <name>     Select network interface\n";
-    std::cout << "  --latency <value>      Add network latency\n";
-    std::cout << "  --jitter <value>       Add latency variation\n";
+    std::cout << "Manual options:\n";
+    std::cout << "  --help                 Show help\n";
+    std::cout << "  --interface <name>     Select interface\n";
+    std::cout << "  --latency <value>      Add latency\n";
+    std::cout << "  --jitter <value>       Add jitter\n";
     std::cout << "  --loss <percentage>    Add packet loss\n";
-    std::cout << "  --clear                Clear network configuration\n";
-    std::cout << "  --status               Show current configuration\n\n";
+    std::cout << "  --clear                Clear configuration\n";
+    std::cout << "  --status               Show configuration\n\n";
 }
 
 
 int main(int argc, char* argv[]) {
 
-    NetworkConfig config;
+    /*
+     * ==========================================
+     * AUTOMATIC MODE
+     * ==========================================
+     *
+     * Running:
+     *
+     *     ./chaos-emulator
+     *
+     * automatically discovers the network and
+     * measures baseline performance.
+     */
 
-    // No arguments
     if (argc == 1) {
-        printHelp();
+
+        std::cout
+            << "\n===============================================\n"
+            << " Network Latency & Packet-Loss Chaos Emulator\n"
+            << "===============================================\n";
+
+        NetworkStats stats =
+            NetworkMonitor::collect();
+
+        if (!stats.success) {
+
+            std::cerr
+                << "\n[ERROR] Unable to collect network statistics.\n";
+
+            return 1;
+        }
+
+        std::cout
+            << "\n===============================================\n"
+            << " BASELINE NETWORK SUMMARY\n"
+            << "===============================================\n";
+
+        std::cout
+            << "Interface       : "
+            << stats.interfaceName
+            << "\n";
+
+        std::cout
+            << "IP Address      : "
+            << stats.ipAddress
+            << "\n";
+
+        std::cout
+            << "Gateway         : "
+            << stats.gateway
+            << "\n";
+
+        std::cout
+            << "Packets Sent    : "
+            << stats.packetsSent
+            << "\n";
+
+        std::cout
+            << "Packets Received: "
+            << stats.packetsReceived
+            << "\n";
+
+        std::cout
+            << "Packet Loss     : "
+            << stats.packetLoss
+            << "%\n";
+
+        std::cout
+            << "Min Latency     : "
+            << stats.minLatency
+            << " ms\n";
+
+        std::cout
+            << "Average Latency : "
+            << stats.avgLatency
+            << " ms\n";
+
+        std::cout
+            << "Max Latency     : "
+            << stats.maxLatency
+            << " ms\n";
+
+        std::cout
+            << "===============================================\n";
+
         return 0;
     }
 
 
-    // Parse command-line arguments
+    /*
+     * ==========================================
+     * MANUAL / ADVANCED MODE
+     * ==========================================
+     */
+
+    NetworkConfig config;
+
+
     for (int i = 1; i < argc; i++) {
 
         std::string argument = argv[i];
@@ -47,6 +135,7 @@ int main(int argc, char* argv[]) {
         if (argument == "--help") {
 
             printHelp();
+            return 0;
         }
 
 
@@ -92,7 +181,8 @@ int main(int argc, char* argv[]) {
 
                 std::cerr
                     << "[ERROR] Invalid latency value: "
-                    << config.latency << "\n";
+                    << config.latency
+                    << "\n";
 
                 return 1;
             }
@@ -117,7 +207,8 @@ int main(int argc, char* argv[]) {
 
                 std::cerr
                     << "[ERROR] Invalid jitter value: "
-                    << config.jitter << "\n";
+                    << config.jitter
+                    << "\n";
 
                 return 1;
             }
@@ -142,7 +233,8 @@ int main(int argc, char* argv[]) {
 
                 std::cerr
                     << "[ERROR] Invalid packet loss value: "
-                    << config.loss << "\n";
+                    << config.loss
+                    << "\n";
 
                 return 1;
             }
@@ -163,23 +255,25 @@ int main(int argc, char* argv[]) {
         }
 
 
-        // UNKNOWN OPTION
+        // UNKNOWN
         else {
 
             std::cerr
                 << "[ERROR] Unknown option: "
-                << argument << "\n";
+                << argument
+                << "\n";
 
             return 1;
         }
     }
 
 
-    // ==============================
-    // EXECUTE REQUESTED OPERATION
-    // ==============================
+    /*
+     * ==========================================
+     * EXECUTE MANUAL OPERATION
+     * ==========================================
+     */
 
-    // CLEAR
     if (config.clear) {
 
         return NetemController::clear(
@@ -188,7 +282,6 @@ int main(int argc, char* argv[]) {
     }
 
 
-    // STATUS
     if (config.status) {
 
         return NetemController::show(
@@ -197,7 +290,6 @@ int main(int argc, char* argv[]) {
     }
 
 
-    // APPLY NETWORK CONFIGURATION
     if (!config.latency.empty() ||
         !config.jitter.empty() ||
         !config.loss.empty()) {
@@ -208,12 +300,10 @@ int main(int argc, char* argv[]) {
     }
 
 
-    // NOTHING TO EXECUTE
-    std::cout << "\n[CONFIGURATION]\n";
+    std::cout
+        << "\n[INFO] No operation specified.\n";
 
-    std::cout << "Interface : "
-              << config.interfaceName
-              << "\n";
+    printHelp();
 
     return 0;
 }
