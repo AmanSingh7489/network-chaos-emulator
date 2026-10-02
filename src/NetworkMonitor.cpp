@@ -48,7 +48,7 @@ std::string NetworkMonitor::detectInterface() {
         return match[1].str();
     }
 
-    // Fallback: try the first non-loopback interface.
+    
     output =
         runCommand(
             "ip -o link show 2>/dev/null"
@@ -151,7 +151,7 @@ bool NetworkMonitor::measureLatency(
         return false;
     }
 
-    // Packet statistics
+    
     std::regex packetPattern(
         R"((\d+)\s+packets transmitted,\s+(\d+)\s+(?:packets )?received,\s+([0-9.]+)%\s+packet loss)"
     );
@@ -173,7 +173,7 @@ bool NetworkMonitor::measureLatency(
             std::stod(packetMatch[3].str());
     }
 
-    // Latency statistics
+   
     std::regex latencyPattern(
     R"(=\s*([0-9.]+)/([0-9.]+)/([0-9.]+))"
 );
@@ -248,8 +248,7 @@ NetworkStats NetworkMonitor::collect() {
     std::cout
         << "\n[2] Measuring baseline network...\n";
 
-    // Prefer gateway because it does not require
-    // Internet access.
+   
     std::string target =
         stats.gateway;
 
