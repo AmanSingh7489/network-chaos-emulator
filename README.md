@@ -66,3 +66,41 @@ The application follows this workflow:
                |
                v
        Experiment Complete
+---
+
+## 4. Technologies Used
+
+- C++17
+- Linux / Ubuntu
+- Linux Traffic Control (`tc`)
+- `netem`
+- `ping`
+- `ip` networking utilities
+- Git & GitHub
+
+---
+
+## 5. Project Structure
+
+```text
+network-chaos-emulator/
+├── include/
+│   ├── Config.hpp
+│   ├── Validator.hpp
+│   ├── NetemController.hpp
+│   ├── NetworkMonitor.hpp
+│   └── ChaosEngine.hpp
+│
+├── src/
+│   ├── main.cpp
+│   ├── Validator.cpp
+│   ├── NetemController.cpp
+│   ├── NetworkMonitor.cpp
+│   └── ChaosEngine.cpp
+│
+├── tests/
+├── logs/
+├── docs/
+├── scripts/
+├── README.md
+└── .gitignore
