@@ -7,13 +7,7 @@
 
 int main(int argc, char* argv[])
 {
-    // ============================================================
-    // AUTOMATIC MODE
-    // Run simply with:
-    //
-    // ./chaos-emulator
-    //
-    // ============================================================
+   
 
     if (argc == 1)
     {
@@ -22,10 +16,7 @@ int main(int argc, char* argv[])
             << "   NETWORK LATENCY & PACKET-LOSS CHAOS EMULATOR\n"
             << "===============================================\n";
 
-        // --------------------------------------------------------
-        // STEP 1: Detect network and measure baseline
-        // --------------------------------------------------------
-
+       
         NetworkStats stats = NetworkMonitor::collect();
 
         if (!stats.success)
@@ -36,10 +27,7 @@ int main(int argc, char* argv[])
             return 1;
         }
 
-        // --------------------------------------------------------
-        // STEP 2: Display baseline results
-        // --------------------------------------------------------
-
+     
         std::cout
             << "\n===============================================\n"
             << " BASELINE NETWORK SUMMARY\n"
@@ -94,9 +82,7 @@ int main(int argc, char* argv[])
             << "===============================================\n";
 
 
-        // --------------------------------------------------------
-        // STEP 3: Start Chaos Engine
-        // --------------------------------------------------------
+       
 
         std::cout
             << "\n[ENGINE] Starting chaos experiment...\n";
@@ -105,10 +91,7 @@ int main(int argc, char* argv[])
             ChaosEngine::runExperiment(stats);
 
 
-        // --------------------------------------------------------
-        // STEP 4: Return experiment status
-        // --------------------------------------------------------
-
+        
         if (!result)
         {
             std::cerr
@@ -126,10 +109,7 @@ int main(int argc, char* argv[])
     }
 
 
-    // ============================================================
-    // HELP
-    // ============================================================
-
+   
     if (argc == 2 &&
         std::string(argv[1]) == "--help")
     {
@@ -147,9 +127,7 @@ int main(int argc, char* argv[])
     }
 
 
-    // ============================================================
-    // INVALID ARGUMENTS
-    // ============================================================
+    
 
     std::cerr
         << "\n[ERROR] Unknown arguments.\n"
