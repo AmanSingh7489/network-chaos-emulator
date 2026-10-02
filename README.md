@@ -2,7 +2,7 @@
 
 ## 1. Project Overview
 
-The Network Latency & Packet-Loss Chaos Emulator is a Linux-based system programming project that simulates controlled network degradation.
+The **Network Latency & Packet-Loss Chaos Emulator** is a Linux-based system programming project that simulates controlled network degradation.
 
 The system automatically detects the active network configuration, measures baseline network performance, applies controlled network impairment using Linux Traffic Control (`tc`) and `netem`, measures the degraded network, compares the results, and restores the network configuration.
 
@@ -40,32 +40,34 @@ The main objectives of the project are:
 
 The application follows this workflow:
 
-'''text
-        Start Application
-               |
-               v
-      Network Discovery
-               |
-               v
-       Baseline Measurement
-               |
-               v
-        Chaos Engine
-               |
-               v
-     Apply Network Impairment
-               |
-               v
-      Measure Degraded Network
-               |
-               v
-        Compare Results
-               |
-               v
-       Restore Network
-               |
-               v
-       Experiment Complete
+```text
+Start Application
+       |
+       v
+Network Discovery
+       |
+       v
+Baseline Measurement
+       |
+       v
+Chaos Engine
+       |
+       v
+Apply Network Impairment
+       |
+       v
+Measure Degraded Network
+       |
+       v
+Compare Results
+       |
+       v
+Restore Network
+       |
+       v
+Experiment Complete
+```
+
 ---
 
 ## 4. Technologies Used
@@ -76,7 +78,8 @@ The application follows this workflow:
 - `netem`
 - `ping`
 - `ip` networking utilities
-- Git & GitHub
+- Git
+- GitHub
 
 ---
 
@@ -84,6 +87,7 @@ The application follows this workflow:
 
 ```text
 network-chaos-emulator/
+│
 ├── include/
 │   ├── Config.hpp
 │   ├── Validator.hpp
@@ -104,3 +108,101 @@ network-chaos-emulator/
 ├── scripts/
 ├── README.md
 └── .gitignore
+```
+
+---
+
+## 6. How to Build and Run
+
+Clone the repository:
+
+```bash
+git clone https://github.com/AmanSingh7489/network-chaos-emulator.git
+cd network-chaos-emulator
+```
+
+Compile the project:
+
+```bash
+g++ -std=c++17 src/*.cpp -Iinclude -o chaos-emulator
+```
+
+Run the emulator:
+
+```bash
+./chaos-emulator
+```
+
+The application automatically detects the network configuration and runs the controlled experiment.
+
+---
+
+## 7. Chaos Configuration
+
+The default experiment uses:
+
+- Test Interface: `lo` (Loopback)
+- Delay: `100 ms`
+- Packet Loss: `10%`
+
+The loopback interface is used to keep the default experiment isolated from the user's active network connection.
+
+---
+
+## 8. Example Result
+
+Example result from a test run:
+
+| Metric | Baseline | After Chaos |
+|---|---:|---:|
+| Average Latency | 0.451 ms | 100.720 ms |
+| Minimum Latency | 0.240 ms | 100.482 ms |
+| Maximum Latency | 1.292 ms | 100.887 ms |
+| Packet Loss | 0% | 0% |
+
+The observed latency increase in this run was approximately **100.269 ms**.
+
+*Results may vary between runs.*
+
+---
+
+## 9. Key Concepts Demonstrated
+
+- Linux networking
+- Network performance monitoring
+- Network latency and packet loss
+- Linux Traffic Control
+- `tc` and `netem`
+- C++ system programming
+- Linux command execution
+- Modular software design
+- Experimental testing
+- Git and GitHub
+
+---
+
+## 10. Safety
+
+The default chaos experiment operates on the Linux loopback interface (`lo`) rather than the active network interface.
+
+This prevents the default experiment from intentionally disrupting the user's actual network connection.
+
+After the experiment, the applied network impairment is removed and the loopback configuration is restored.
+
+---
+
+## 11. Future Enhancements
+
+- Configurable chaos profiles
+- Additional network impairment types
+- Automated report generation
+- Graphical monitoring dashboard
+- Extended statistical analysis
+
+---
+
+## 12. Conclusion
+
+The **Network Latency & Packet-Loss Chaos Emulator** demonstrates how Linux networking tools and C++ system programming can be combined to simulate, measure, and analyze controlled network degradation.
+
+The project provides practical experience with network monitoring, Linux Traffic Control, network emulation, system-level programming, and experimental analysis.
