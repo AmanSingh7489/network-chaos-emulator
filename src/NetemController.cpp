@@ -15,7 +15,6 @@ bool NetemController::apply(
             << config.interfaceName
             << " root netem";
 
-    // Add latency and jitter
     if (!config.latency.empty()) {
 
         command << " delay "
@@ -27,7 +26,6 @@ bool NetemController::apply(
         }
     }
 
-    // Add packet loss
     if (!config.loss.empty()) {
 
         command << " loss "
@@ -64,7 +62,6 @@ bool NetemController::apply(
 bool NetemController::clear(
     const std::string& interfaceName
 ) {
-    // First check whether netem is actually active.
     std::string checkCommand =
         "tc qdisc show dev " +
         interfaceName;
@@ -91,7 +88,7 @@ bool NetemController::clear(
 
     pclose(pipe);
 
-    // Already clear
+    
     if (output.find("netem") == std::string::npos) {
 
         std::cout
