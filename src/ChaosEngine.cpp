@@ -11,13 +11,7 @@ bool ChaosEngine::applyChaos(
     std::cout
         << "\n[CHAOS] Applying controlled network latency...\n";
 
-    /*
-     * For the first experiment we use a fixed,
-     * controlled 100 ms delay.
-     *
-     * Later, the engine will calculate this
-     * automatically from baseline measurements.
-     */
+    
 
     std::string command =
         "sudo tc qdisc replace dev " +
@@ -139,21 +133,20 @@ bool ChaosEngine::runExperiment(
         return false;
     }
 
-    // Step 1: Apply controlled impairment
     if (!applyChaos(
             baseline.interfaceName)) {
 
         return false;
     }
 
-    // Step 2: Measure network after impairment
+   
     std::cout
         << "\n[CHAOS] Measuring network under impairment...\n";
 
     NetworkStats degraded =
         NetworkMonitor::collect();
 
-    // Step 3: Always restore the network
+    
     clearChaos(
         baseline.interfaceName
     );
@@ -166,7 +159,7 @@ bool ChaosEngine::runExperiment(
         return false;
     }
 
-    // Step 4: Compare measurements
+ 
     printComparison(
         baseline,
         degraded
