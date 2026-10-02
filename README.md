@@ -40,7 +40,7 @@ The main objectives of the project are:
 
 The application follows this workflow:
 
-```text
+'''text
         Start Application
                |
                v
